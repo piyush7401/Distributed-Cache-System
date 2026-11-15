@@ -6,3 +6,4 @@ main/java/com/example/cache/proxy/ProxyController.class
 main/java/com/example/cache/cache/LRUCache.class
 main/java/com/example/cache/config/AppConfig.class
 main/java/com/example/cache/Main.class
+main/java/com/example/cache/proxy/ConsistentHashing.class

@@ -31,6 +31,8 @@ public class LRUCache {
         map = new HashMap<>();
         head = new Node("#", "#");
         tail = new Node("#", "#");
+        head.next = tail;
+        tail.prev = head;
         cap = 10;
     }
 

@@ -4,7 +4,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/proxy")
 @Profile("proxy")
 public class ProxyController {
 

@@ -17,12 +17,10 @@ public class RestClientService {
     }
 
     public String getFromServer(String key){
-        int port = proxyServer.routeRequest(key);
-
-        String url = "http://localhost:" + port + "/api/get?key=" + key;
+        String url = proxyServer.routeRequest(key);
         try{
             return restClient.get()
-                    .uri(url)
+                    .uri(url+ "/api/get?key={key}", key)
                     .retrieve()
                     .body(String.class);
         } catch (Exception e) {
@@ -31,12 +29,11 @@ public class RestClientService {
     }
 
     public String putToServer(String key,String value){
-        int port = proxyServer.routeRequest(key);
+        String url = proxyServer.routeRequest(key);
 
-        String url = "http://localhost:" + port + "/api/put?key=" + key + "&value=" + value;
         try{
             return restClient.post()
-                    .uri(url)
+                    .uri(url+ "/api/put?key={key}&value={value}", key, value)
                     .retrieve()
                     .body(String.class);
         } catch (Exception e) {

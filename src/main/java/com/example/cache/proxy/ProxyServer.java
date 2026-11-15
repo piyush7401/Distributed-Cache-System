@@ -8,33 +8,39 @@ import java.util.*;
 @Component
 @Profile("proxy")
 public class ProxyServer {
-    private final Map<Integer,String> serverMap = new HashMap<>();
+    private final Map<String,String> serverMap = new HashMap<>();
+    private ConsistentHashing consistentHashing;
 
-    public ProxyServer() {
-        serverMap.put(8081, "LRU Server 1");
-        serverMap.put(8082, "LRU Server 2");
-        serverMap.put(8083, "LRU Server 3");
+    public ProxyServer(ConsistentHashing consistentHashing) {
+        this.consistentHashing = consistentHashing;
+        addServer("server1", "http://localhost:8081");
+        addServer("server2", "http://localhost:8082");
+        addServer("server3", "http://localhost:8083");
     }
 
-    public int routeRequest(String key) {
+    public String routeRequest(String key) {
+        String severId = consistentHashing.routeHashing(key);
 
-        if(serverMap.isEmpty()){
-            throw new RuntimeException("No servers available");
+        return serverMap.get(severId);
+    }
+
+    public void addServer(String serverId , String url){
+        if (serverMap.containsKey(serverId)) {
+            throw new IllegalArgumentException(
+                    "Server already exists: " + serverId
+            );
         }
-        List<Integer> ports = new ArrayList<>(serverMap.keySet());
 
-        Collections.sort(ports);
-
-        int hash = Math.abs(key.hashCode());
-        int portIndex = hash % ports.size();
-        return ports.get(portIndex);
+        consistentHashing.addServer(serverId);
+        serverMap.put(serverId,url);
     }
 
-    public void addServer(int port , String serverName){
-        serverMap.put(port,serverName);
-    }
+    public void removeServer(String serverId){
+        if(!serverMap.containsKey(serverId)){
+            throw new RuntimeException("Server not exist");
+        }
 
-    public void removeServer(int port){
-        serverMap.remove(port);
+        serverMap.remove(serverId);
+        consistentHashing.removeServer(serverId);
     }
 }
